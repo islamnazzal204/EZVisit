@@ -1,0 +1,658 @@
+@import "tailwindcss";
+
+/* ============================================================
+   EZVisit — Healthcare Design System
+   ============================================================ */
+
+/* --- Theme Tokens --- */
+:root {
+  /* Primary — Medical Blue */
+  --primary: hsl(210, 70%, 55%);
+  --primary-hover: hsl(210, 70%, 48%);
+  --primary-soft: hsl(210, 60%, 95%);
+  --primary-muted: hsl(210, 40%, 80%);
+
+  /* Accent — Health Green */
+  --accent: hsl(152, 60%, 45%);
+  --accent-hover: hsl(152, 60%, 38%);
+  --accent-soft: hsl(152, 50%, 95%);
+  --accent-muted: hsl(152, 40%, 80%);
+
+  /* Destructive — Alert Red */
+  --destructive: hsl(0, 72%, 51%);
+  --destructive-hover: hsl(0, 72%, 44%);
+  --destructive-soft: hsl(0, 60%, 95%);
+
+  /* Warning — Amber */
+  --warning: hsl(38, 92%, 50%);
+  --warning-soft: hsl(38, 80%, 95%);
+
+  /* Neutrals */
+  --background: hsl(210, 20%, 98%);
+  --surface: hsl(0, 0%, 100%);
+  --surface-hover: hsl(210, 15%, 96%);
+  --card: hsl(0, 0%, 100%);
+  --card-hover: hsl(210, 15%, 97%);
+
+  /* Text */
+  --foreground: hsl(210, 25%, 12%);
+  --foreground-secondary: hsl(210, 15%, 40%);
+  --foreground-muted: hsl(210, 10%, 60%);
+  --foreground-on-primary: hsl(0, 0%, 100%);
+
+  /* Borders */
+  --border: hsl(210, 15%, 90%);
+  --border-strong: hsl(210, 15%, 82%);
+  --ring: hsl(210, 70%, 55%);
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.08), 0 4px 6px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.1), 0 8px 10px rgba(0, 0, 0, 0.04);
+
+  /* Radius */
+  --radius-sm: 8px;
+  --radius: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
+
+  /* Spacing */
+  --bottom-nav-height: 72px;
+  --header-height: 56px;
+
+  /* Glass */
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.4);
+  --glass-blur: 12px;
+}
+
+/* Dark Mode */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --primary: hsl(210, 65%, 62%);
+    --primary-hover: hsl(210, 65%, 55%);
+    --primary-soft: hsl(210, 40%, 15%);
+    --primary-muted: hsl(210, 30%, 30%);
+
+    --accent: hsl(152, 55%, 52%);
+    --accent-hover: hsl(152, 55%, 45%);
+    --accent-soft: hsl(152, 35%, 15%);
+    --accent-muted: hsl(152, 25%, 30%);
+
+    --destructive: hsl(0, 65%, 58%);
+    --destructive-hover: hsl(0, 65%, 50%);
+    --destructive-soft: hsl(0, 40%, 15%);
+
+    --warning: hsl(38, 80%, 55%);
+    --warning-soft: hsl(38, 40%, 15%);
+
+    --background: hsl(220, 20%, 8%);
+    --surface: hsl(220, 18%, 12%);
+    --surface-hover: hsl(220, 16%, 16%);
+    --card: hsl(220, 18%, 14%);
+    --card-hover: hsl(220, 16%, 18%);
+
+    --foreground: hsl(210, 20%, 92%);
+    --foreground-secondary: hsl(210, 12%, 65%);
+    --foreground-muted: hsl(210, 8%, 48%);
+    --foreground-on-primary: hsl(0, 0%, 100%);
+
+    --border: hsl(220, 15%, 20%);
+    --border-strong: hsl(220, 15%, 28%);
+    --ring: hsl(210, 65%, 62%);
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --shadow: 0 1px 3px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.35), 0 2px 4px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.4), 0 4px 6px rgba(0, 0, 0, 0.3);
+
+    --glass-bg: rgba(20, 25, 35, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.08);
+  }
+}
+
+/* Tailwind theme integration */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-soft: var(--primary-soft);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-destructive: var(--destructive);
+  --color-destructive-soft: var(--destructive-soft);
+  --color-surface: var(--surface);
+  --color-card: var(--card);
+  --color-border: var(--border);
+  --color-ring: var(--ring);
+  --color-foreground-secondary: var(--foreground-secondary);
+  --color-foreground-muted: var(--foreground-muted);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-arabic: var(--font-ibm-plex-arabic);
+}
+
+/* --- Base Styles --- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans, system-ui, -apple-system, sans-serif);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Arabic font for RTL text */
+[dir="rtl"] body,
+.font-arabic {
+  font-family: var(--font-ibm-plex-arabic, 'IBM Plex Sans Arabic', system-ui, sans-serif);
+}
+
+/* --- Animations --- */
+@keyframes pulse-ring {
+  0% { transform: scale(0.9); opacity: 0.7; }
+  50% { transform: scale(1.1); opacity: 0.3; }
+  100% { transform: scale(0.9); opacity: 0.7; }
+}
+
+@keyframes recording-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slide-in-bottom {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out;
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.5s ease-out;
+}
+
+.animate-slide-in-bottom {
+  animation: slide-in-bottom 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.animate-scale-in {
+  animation: scale-in 0.3s ease-out;
+}
+
+.animate-pulse-ring {
+  animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-recording-pulse {
+  animation: recording-pulse 1.5s ease-in-out infinite;
+}
+
+/* --- Glass Effect --- */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+}
+
+/* --- Card Styles --- */
+.card {
+  background: var(--card);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.card:hover {
+  box-shadow: var(--shadow);
+}
+
+.card-interactive {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.card-interactive:hover {
+  border-color: var(--primary-muted);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+.card-interactive:active {
+  transform: translateY(0);
+}
+
+/* --- Button Styles --- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: none;
+  border-radius: var(--radius);
+  font-weight: 600;
+  font-size: 0.938rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 12px 24px;
+  white-space: nowrap;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: var(--foreground-on-primary);
+}
+
+.btn-primary:hover {
+  background: var(--primary-hover);
+}
+
+.btn-accent {
+  background: var(--accent);
+  color: var(--foreground-on-primary);
+}
+
+.btn-accent:hover {
+  background: var(--accent-hover);
+}
+
+.btn-destructive {
+  background: var(--destructive);
+  color: var(--foreground-on-primary);
+}
+
+.btn-destructive:hover {
+  background: var(--destructive-hover);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--foreground-secondary);
+}
+
+.btn-ghost:hover {
+  background: var(--surface-hover);
+  color: var(--foreground);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--foreground);
+  border: 1.5px solid var(--border);
+}
+
+.btn-outline:hover {
+  background: var(--surface-hover);
+  border-color: var(--border-strong);
+}
+
+.btn-lg {
+  padding: 16px 32px;
+  font-size: 1.063rem;
+  border-radius: var(--radius-lg);
+}
+
+.btn-sm {
+  padding: 8px 16px;
+  font-size: 0.813rem;
+  border-radius: var(--radius-sm);
+}
+
+.btn-icon {
+  padding: 10px;
+  border-radius: var(--radius-full);
+}
+
+.btn-icon-lg {
+  padding: 16px;
+  border-radius: var(--radius-full);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* --- Skeleton Loader --- */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--surface-hover) 25%,
+    var(--border) 50%,
+    var(--surface-hover) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius-sm);
+}
+
+/* --- Scrollbar --- */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--foreground-muted);
+}
+
+/* --- Safe area padding (mobile) --- */
+.safe-bottom {
+  padding-bottom: max(env(safe-area-inset-bottom, 0px), 8px);
+}
+
+.safe-top {
+  padding-top: max(env(safe-area-inset-top, 0px), 0px);
+}
+
+/* --- Tab styles --- */
+.tab-active {
+  color: var(--primary);
+  border-bottom: 2px solid var(--primary);
+}
+
+.tab-inactive {
+  color: var(--foreground-muted);
+  border-bottom: 2px solid transparent;
+}
+
+.tab-inactive:hover {
+  color: var(--foreground-secondary);
+  border-bottom-color: var(--border);
+}
+
+/* --- Badge styles --- */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.badge-primary {
+  background: var(--primary-soft);
+  color: var(--primary);
+}
+
+.badge-accent {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.badge-destructive {
+  background: var(--destructive-soft);
+  color: var(--destructive);
+}
+
+.badge-warning {
+  background: var(--warning-soft);
+  color: var(--warning);
+}
+
+/* --- Speaker label styles --- */
+.speaker-doctor {
+  background: var(--primary-soft);
+  color: var(--primary);
+  border-inline-start: 3px solid var(--primary);
+}
+
+.speaker-patient {
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-inline-start: 3px solid var(--accent);
+}
+
+.speaker-unknown {
+  background: var(--surface-hover);
+  color: var(--foreground-muted);
+  border-inline-start: 3px solid var(--border-strong);
+}
+
+/* --- Score colors --- */
+.score-excellent { color: hsl(152, 60%, 40%); }
+.score-good { color: hsl(170, 55%, 42%); }
+.score-average { color: hsl(38, 80%, 48%); }
+.score-poor { color: hsl(0, 65%, 50%); }
+
+/* --- Page transitions --- */
+.page-enter {
+  animation: fade-in-up 0.4s ease-out;
+}
+
+/* --- RTL-aware utility --- */
+[dir="rtl"] .flip-rtl {
+  transform: scaleX(-1);
+}
+
+/* --- Responsive Layout --- */
+
+/* Tablet (768px+) */
+@media (min-width: 768px) {
+  .page-enter {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+
+  .card {
+    border-radius: var(--radius-lg);
+  }
+
+  .btn-lg {
+    padding: 18px 36px;
+    font-size: 1.125rem;
+  }
+}
+
+/* Desktop (1024px+) */
+@media (min-width: 1024px) {
+  :root {
+    --bottom-nav-height: 80px;
+    --header-height: 64px;
+  }
+
+  .page-enter {
+    padding-left: 32px;
+    padding-right: 32px;
+  }
+}
+
+/* Ensure full-width on small screens */
+@media (max-width: 480px) {
+  .card {
+    border-radius: var(--radius-sm);
+  }
+}
+
+/* Fix for dvh support */
+@supports (height: 100dvh) {
+  body {
+    min-height: 100dvh;
+  }
+}
+
+/* ============================================================
+   Login Page Styles
+   ============================================================ */
+
+/* --- Floating Background Orbs --- */
+@keyframes orb-float-1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25% { transform: translate(30px, -40px) scale(1.1); }
+  50% { transform: translate(-20px, -80px) scale(0.95); }
+  75% { transform: translate(40px, -30px) scale(1.05); }
+}
+
+@keyframes orb-float-2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25% { transform: translate(-40px, 30px) scale(1.08); }
+  50% { transform: translate(30px, 60px) scale(0.92); }
+  75% { transform: translate(-30px, 20px) scale(1.04); }
+}
+
+@keyframes orb-float-3 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(50px, -20px) scale(1.12); }
+  66% { transform: translate(-30px, 40px) scale(0.9); }
+}
+
+.login-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.4;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.login-orb-1 {
+  width: 300px;
+  height: 300px;
+  background: linear-gradient(135deg, hsl(210, 70%, 55%), hsl(210, 80%, 70%));
+  top: -80px;
+  right: -60px;
+  animation: orb-float-1 12s ease-in-out infinite;
+}
+
+.login-orb-2 {
+  width: 250px;
+  height: 250px;
+  background: linear-gradient(135deg, hsl(152, 60%, 45%), hsl(170, 70%, 60%));
+  bottom: -50px;
+  left: -50px;
+  animation: orb-float-2 15s ease-in-out infinite;
+}
+
+.login-orb-3 {
+  width: 180px;
+  height: 180px;
+  background: linear-gradient(135deg, hsl(260, 60%, 60%), hsl(280, 70%, 70%));
+  top: 40%;
+  left: 50%;
+  animation: orb-float-3 10s ease-in-out infinite;
+}
+
+@media (prefers-color-scheme: dark) {
+  .login-orb {
+    opacity: 0.2;
+    filter: blur(100px);
+  }
+}
+
+/* --- Login Card --- */
+.login-card {
+  animation: scale-in 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* --- Login Input Wrapper --- */
+.login-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* --- Login Input Focus --- */
+.login-input:focus {
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15) !important;
+}
+
+.login-input::placeholder {
+  color: var(--foreground-muted);
+  opacity: 0.7;
+}
+
+/* --- Logo Pulse --- */
+@keyframes logo-glow {
+  0%, 100% { box-shadow: 0 8px 32px rgba(59, 130, 246, 0.3); }
+  50% { box-shadow: 0 8px 48px rgba(59, 130, 246, 0.5), 0 0 20px rgba(59, 130, 246, 0.2); }
+}
+
+.login-logo-pulse {
+  animation: logo-glow 3s ease-in-out infinite;
+}
+
+/* --- Spinner --- */
+@keyframes login-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.login-spinner {
+  animation: login-spin 0.8s linear infinite;
+}
+
+/* --- Auth Loading Overlay --- */
+@keyframes auth-pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+.auth-loading-pulse {
+  animation: auth-pulse 1.5s ease-in-out infinite;
+}
+
