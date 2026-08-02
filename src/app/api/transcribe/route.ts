@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
     }
 
     // ── Transcribe ──────────────────────────────────────────
-    console.log('Transcribing with Groq...');
+    console.log(`Transcribing with Groq... Audio size: ${(audioFile.size / 1024).toFixed(1)} KB, type: ${audioFile.type}`);
     const result = await transcribeAudioGroq(audioFile as File, groqKey);
 
     return Response.json({
@@ -77,8 +77,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Surface the actual error message for debugging
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     return Response.json(
-      { error: 'Transcription failed. Please try again.' },
+      { error: `Transcription failed: ${errorMessage}` },
       { status: 500 }
     );
   }

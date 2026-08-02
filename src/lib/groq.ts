@@ -134,11 +134,30 @@ export async function transcribeAudioGroq(
     });
   }
 
+  // Ensure the audio blob has the correct content type for Groq's API
+  const audioBuffer = await audioFile.arrayBuffer();
+  const mimeType = audioFile.type || 'audio/webm';
+  const safeBlob = new Blob([audioBuffer], { type: mimeType });
+
+  // Determine file extension from MIME type
+  const extMap: Record<string, string> = {
+    'audio/webm': 'webm',
+    'audio/mp4': 'mp4',
+    'audio/mpeg': 'mp3',
+    'audio/wav': 'wav',
+    'audio/ogg': 'ogg',
+    'audio/flac': 'flac',
+  };
+  const ext = extMap[mimeType] || 'webm';
+  const fileName = `audio.${ext}`;
+
   const formData = new FormData();
-  formData.append('file', audioFile, 'audio.webm');
+  formData.append('file', safeBlob, fileName);
   formData.append('model', 'whisper-large-v3-turbo');
   formData.append('language', 'ar');
   formData.append('response_format', 'verbose_json');
+
+  console.log(`Sending to Groq: ${(audioBuffer.byteLength / 1024).toFixed(1)} KB, mime: ${mimeType}, filename: ${fileName}`);
 
   const response = await fetch('https://api.groq.com/openai/v1/audio/transcriptions', {
     method: 'POST',
