@@ -92,29 +92,20 @@ export default function ResultsPage() {
     setIsEditingName(false);
   };
 
-  const handleExportJSON = () => {
-    const data = {
-      session: {
-        id: session.id,
-        name: session.name,
-        createdAt: session.createdAt,
-        audioDuration: session.audioDuration,
-        modelUsed: session.modelUsed,
-      },
-      rawTranscript: session.rawTranscript,
-      diarizedTranscript: session.diarizedTranscript,
-      summary: session.summary,
-      patientInstructions: session.patientInstructions,
-      doctorFeedback: session.doctorFeedback,
-    };
+  const [isExporting, setIsExporting] = useState(false);
 
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `ezvisit-${session.id.slice(0, 8)}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
+  const handleExportWord = async () => {
+    if (!session || isExporting) return;
+    setIsExporting(true);
+    try {
+      const { exportSessionToWord } = await import('@/lib/export-word');
+      await exportSessionToWord(session);
+    } catch (err) {
+      console.error('Export failed:', err);
+      alert(isArabic ? 'فشل التصدير. حاول مرة أخرى.' : 'Export failed. Please try again.');
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   return (
@@ -315,17 +306,23 @@ export default function ResultsPage() {
         }}
       >
         <button
-          id="btn-export-json"
-          onClick={handleExportJSON}
+          id="btn-export-word"
+          onClick={handleExportWord}
+          disabled={isExporting}
           className="btn btn-primary btn-icon"
           style={{
             width: '48px',
             height: '48px',
             boxShadow: 'var(--shadow-lg)',
+            opacity: isExporting ? 0.7 : 1,
           }}
-          title="Export JSON"
+          title={isArabic ? 'تحميل Word' : 'Download Word'}
         >
-          <Download size={20} />
+          {isExporting ? (
+            <span style={{ fontSize: '14px', animation: 'spin 1s linear infinite' }}>⏳</span>
+          ) : (
+            <Download size={20} />
+          )}
         </button>
       </div>
     </div>
