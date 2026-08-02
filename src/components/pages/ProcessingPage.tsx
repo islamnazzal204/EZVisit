@@ -60,9 +60,7 @@ export default function ProcessingPage() {
         formData.append('audio', audioBlob, 'recording.webm');
         if (settings.apiKey) {
           formData.append('apiKey', settings.apiKey);
-          // Detect provider based on API key format
-          const provider = (settings.apiKey.startsWith('sk-or') || settings.apiKey.includes('openrouter')) ? 'openrouter' : 'groq';
-          formData.append('provider', provider);
+          formData.append('provider', 'groq');
         }
 
         const authToken = await getAuthToken();
@@ -96,8 +94,7 @@ export default function ProcessingPage() {
         // Step 2: Analyze
         setProcessingStep('analyzing');
 
-        // Detect provider based on API key format
-        const provider = settings.apiKey && (settings.apiKey.startsWith('sk-or') || settings.apiKey.includes('openrouter')) ? 'openrouter' : 'groq';
+        const provider = 'groq';
         
         const analyzeToken = await getAuthToken();
 

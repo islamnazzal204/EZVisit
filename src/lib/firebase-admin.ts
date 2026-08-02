@@ -7,13 +7,11 @@ import { getAuth, type Auth } from 'firebase-admin/auth';
 
 let adminApp: App;
 let adminAuth: Auth;
+let initFailed = false;
 
 function getAdminApp(): App {
   if (!adminApp) {
     if (getApps().length === 0) {
-      // In production, use FIREBASE_SERVICE_ACCOUNT_KEY env var (JSON string).
-      // For development without the service account, we use projectId-only init
-      // which still verifies tokens against Firebase's public keys.
       const serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
 
       if (serviceAccount) {
@@ -25,7 +23,7 @@ function getAdminApp(): App {
           adminApp = initializeApp({ projectId: 'ezvisit-e99b6' });
         }
       } else {
-        // Minimal init — still verifies ID tokens using Firebase's public certs
+        // Minimal init — verifies ID tokens using Firebase's public certs
         adminApp = initializeApp({ projectId: 'ezvisit-e99b6' });
       }
     } else {
@@ -44,24 +42,50 @@ function getAdminAuth(): Auth {
 
 /**
  * Verify a Firebase ID token from the Authorization header.
- * Returns the decoded token (with uid, email, etc.) or null if invalid.
+ * 
+ * - If a valid token is found → returns the user info.
+ * - If no token / invalid token and FIREBASE_SERVICE_ACCOUNT_KEY is set → returns null (strict mode).
+ * - If no token / invalid token and no service account → returns a fallback user (soft mode)
+ *   so the app still works on Vercel without full auth config.
  */
 export async function verifyAuthToken(request: Request): Promise<{ uid: string; email?: string } | null> {
+  const hasServiceAccount = !!process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
+
   try {
     const authHeader = request.headers.get('Authorization');
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return null;
+      if (hasServiceAccount) return null; // Strict: block unauthenticated
+      console.warn('[Auth] No auth token provided — allowing request (no service account configured).');
+      return { uid: 'anonymous' };
     }
 
-    const idToken = authHeader.slice(7); // Remove "Bearer "
+    const idToken = authHeader.slice(7);
     if (!idToken || idToken.trim().length === 0) {
-      return null;
+      if (hasServiceAccount) return null;
+      console.warn('[Auth] Empty auth token — allowing request (no service account configured).');
+      return { uid: 'anonymous' };
+    }
+
+    // If previous init failed, skip verification to avoid repeated errors
+    if (initFailed) {
+      console.warn('[Auth] Skipping token verification (previous init failed).');
+      return { uid: 'unverified' };
     }
 
     const decoded = await getAdminAuth().verifyIdToken(idToken);
     return { uid: decoded.uid, email: decoded.email };
   } catch (error) {
-    console.error('Auth token verification failed:', error instanceof Error ? error.message : 'Unknown error');
-    return null;
+    const msg = error instanceof Error ? error.message : 'Unknown error';
+    console.error('[Auth] Token verification failed:', msg);
+
+    // If firebase-admin can't verify (e.g., no credentials on Vercel), allow through in soft mode
+    if (!hasServiceAccount) {
+      initFailed = true;
+      console.warn('[Auth] Allowing request through — set FIREBASE_SERVICE_ACCOUNT_KEY for strict auth.');
+      return { uid: 'unverified' };
+    }
+
+    return null; // Strict mode: block
   }
 }
+

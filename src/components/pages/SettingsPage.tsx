@@ -87,12 +87,12 @@ export default function SettingsPage() {
               type={showApiKey ? 'text' : 'password'}
               value={apiKeyInput}
               onChange={(e) => setApiKeyInput(e.target.value)}
-              placeholder="gsk-..."
+              placeholder="gsk_..."
               style={{
                 width: '100%',
                 padding: '10px 36px 10px 12px',
                 borderRadius: 'var(--radius-sm)',
-                border: '1.5px solid var(--border)',
+                border: `1.5px solid ${apiKeyInput && !apiKeyInput.startsWith('gsk_') ? 'var(--destructive)' : 'var(--border)'}`,
                 background: 'var(--surface)',
                 color: 'var(--foreground)',
                 fontSize: '0.875rem',
@@ -122,6 +122,35 @@ export default function SettingsPage() {
             {saved ? <CheckCircle2 size={16} /> : isArabic ? 'حفظ' : 'Save'}
           </button>
         </div>
+
+        {/* API key validation hints */}
+        {apiKeyInput && !apiKeyInput.startsWith('gsk_') && (
+          <p style={{
+            fontSize: '0.75rem',
+            color: 'var(--destructive)',
+            margin: '8px 0 0',
+            lineHeight: 1.4,
+          }}>
+            {apiKeyInput.startsWith('sk-or') || apiKeyInput.includes('openrouter')
+              ? (isArabic
+                ? '⚠️ هذا مفتاح OpenRouter. EZVisit يدعم فقط مفاتيح Groq (تبدأ بـ gsk_). احصل على مفتاح مجاني من console.groq.com'
+                : '⚠️ This looks like an OpenRouter key. EZVisit only supports Groq API keys (starting with gsk_). Get a free key at console.groq.com')
+              : (isArabic
+                ? '⚠️ مفتاح Groq يبدأ بـ gsk_. احصل على مفتاح مجاني من console.groq.com'
+                : '⚠️ Groq API keys start with gsk_. Get a free key at console.groq.com')
+            }
+          </p>
+        )}
+        {apiKeyInput && apiKeyInput.startsWith('gsk_') && (
+          <p style={{
+            fontSize: '0.75rem',
+            color: 'var(--accent)',
+            margin: '8px 0 0',
+            lineHeight: 1.4,
+          }}>
+            {isArabic ? '✓ صيغة مفتاح Groq صحيحة' : '✓ Valid Groq key format'}
+          </p>
+        )}
       </div>
 
       {/* AI Status */}
