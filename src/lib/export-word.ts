@@ -213,6 +213,120 @@ function buildSummarySection(summary: ConversationSummary): Paragraph[] {
     }
   }
 
+  // --- Patient History ---
+  if (summary.patientHistory) {
+    const ph = summary.patientHistory;
+
+    paragraphs.push(createHeading('Patient History', HeadingLevel.HEADING_1));
+
+    // Patient Profile
+    if (ph.patientProfile) {
+      paragraphs.push(createHeading('Patient Profile', HeadingLevel.HEADING_2));
+      paragraphs.push(
+        new Paragraph({
+          spacing: { after: 100 },
+          bidirectional: true,
+          children: [new TextRun({ text: ph.patientProfile, size: 22 })],
+        }),
+      );
+    }
+
+    // Presenting Complaint
+    if (ph.presentingComplaint) {
+      paragraphs.push(createHeading('Presenting Complaint', HeadingLevel.HEADING_2));
+      paragraphs.push(
+        new Paragraph({
+          spacing: { after: 100 },
+          bidirectional: true,
+          children: [new TextRun({ text: ph.presentingComplaint, size: 22 })],
+        }),
+      );
+    }
+
+    // History of Present Illness (SOCRATES)
+    if (ph.historyOfPresentIllness) {
+      paragraphs.push(createHeading('History of Present Illness (SOCRATES)', HeadingLevel.HEADING_2));
+
+      const socratesEntries: [string, string][] = [
+        ['Site', ph.historyOfPresentIllness.site],
+        ['Onset', ph.historyOfPresentIllness.onset],
+        ['Character', ph.historyOfPresentIllness.character],
+        ['Radiation', ph.historyOfPresentIllness.radiation],
+        ['Associations', ph.historyOfPresentIllness.associations],
+        ['Time Course', ph.historyOfPresentIllness.timeCourse],
+        ['Exacerbating/Relieving Factors', ph.historyOfPresentIllness.exacerbatingRelievingFactors],
+        ['Severity', ph.historyOfPresentIllness.severity],
+      ].filter(([, val]) => val) as [string, string][];
+
+      if (socratesEntries.length) {
+        const headerRow = new TableRow({
+          tableHeader: true,
+          children: ['SOCRATES', 'Details'].map(
+            (text) =>
+              new TableCell({
+                shading: { type: ShadingType.SOLID, color: '8e44ad', fill: '8e44ad' },
+                children: [
+                  new Paragraph({
+                    alignment: AlignmentType.CENTER,
+                    children: [new TextRun({ text, bold: true, color: 'ffffff', size: 20 })],
+                  }),
+                ],
+              }),
+          ),
+        });
+
+        const dataRows = socratesEntries.map(
+          ([label, value]) =>
+            new TableRow({
+              children: [
+                new TableCell({
+                  shading: { type: ShadingType.SOLID, color: 'f4ecf7', fill: 'f4ecf7' },
+                  children: [
+                    new Paragraph({
+                      children: [new TextRun({ text: label, bold: true, size: 20 })],
+                    }),
+                  ],
+                }),
+                new TableCell({
+                  children: [
+                    new Paragraph({
+                      bidirectional: true,
+                      children: [new TextRun({ text: value, size: 20 })],
+                    }),
+                  ],
+                }),
+              ],
+            }),
+        );
+
+        paragraphs.push(
+          new Table({
+            width: { size: 100, type: WidthType.PERCENTAGE },
+            rows: [headerRow, ...dataRows],
+          }) as unknown as Paragraph,
+        );
+      }
+    }
+
+    // List-based sections
+    const historySections: { title: string; items: string[] }[] = [
+      { title: 'Past Medical History', items: ph.pastMedicalHistory },
+      { title: 'Drug History', items: ph.drugHistory },
+      { title: 'Family History', items: ph.familyHistory },
+      { title: 'Social History', items: ph.socialHistory },
+      { title: 'Review of Systems', items: ph.reviewOfSystems },
+    ];
+
+    for (const section of historySections) {
+      if (section.items?.length) {
+        paragraphs.push(createHeading(section.title, HeadingLevel.HEADING_2));
+        for (const item of section.items) {
+          paragraphs.push(createBullet(item));
+        }
+      }
+    }
+  }
+
   paragraphs.push(createDivider());
   return paragraphs;
 }

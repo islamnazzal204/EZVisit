@@ -40,7 +40,26 @@ Return ONLY valid JSON with this exact structure (all text in Arabic):
     "doctorExplanations": ["شرح 1"],
     "treatmentDiscussed": ["علاج 1"],
     "followUpRecommendations": ["توصية 1"],
-    "importantConcerns": ["ملاحظة مهمة 1"]
+    "importantConcerns": ["ملاحظة مهمة 1"],
+    "patientHistory": {
+      "patientProfile": "وصف شامل للمريض: العمر، الجنس، المهنة، وأي معلومات ديموغرافية ذُكرت",
+      "presentingComplaint": "الشكوى التي جاء بها المريض بكلماته",
+      "historyOfPresentIllness": {
+        "site": "موقع الألم أو العرض",
+        "onset": "متى بدأ ومفاجئ أم تدريجي",
+        "character": "طبيعة الألم أو العرض (حاد، حارق، ضاغط...)",
+        "radiation": "هل ينتشر الألم لمكان آخر",
+        "associations": "أعراض مصاحبة (غثيان، حمى...)",
+        "timeCourse": "مدة الأعراض وتطورها مع الوقت",
+        "exacerbatingRelievingFactors": "ما يزيد أو يخفف الأعراض",
+        "severity": "شدة الأعراض (من 1 إلى 10 إن ذُكر)"
+      },
+      "pastMedicalHistory": ["أمراض سابقة 1", "عمليات جراحية"],
+      "drugHistory": ["دواء حالي 1", "حساسية دوائية"],
+      "familyHistory": ["أمراض وراثية في العائلة"],
+      "socialHistory": ["التدخين", "الكحول", "طبيعة العمل", "النشاط البدني"],
+      "reviewOfSystems": ["جهاز القلب والأوعية", "الجهاز التنفسي", "الجهاز الهضمي"]
+    }
   }
 }
 

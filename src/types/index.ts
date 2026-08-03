@@ -56,6 +56,28 @@ export interface TranscriptSegment {
 
 // --- Conversation Summary ---
 
+export interface SOCRATESHistory {
+  site: string;
+  onset: string;
+  character: string;
+  radiation: string;
+  associations: string;
+  timeCourse: string;
+  exacerbatingRelievingFactors: string;
+  severity: string;
+}
+
+export interface PatientHistory {
+  patientProfile: string;
+  presentingComplaint: string;
+  historyOfPresentIllness: SOCRATESHistory;
+  pastMedicalHistory: string[];
+  drugHistory: string[];
+  familyHistory: string[];
+  socialHistory: string[];
+  reviewOfSystems: string[];
+}
+
 export interface ConversationSummary {
   mainComplaint: string;
   symptomsDiscussed: string[];
@@ -64,6 +86,7 @@ export interface ConversationSummary {
   treatmentDiscussed: string[];
   followUpRecommendations: string[];
   importantConcerns: string[];
+  patientHistory?: PatientHistory;
 }
 
 // --- Patient Instructions ---
