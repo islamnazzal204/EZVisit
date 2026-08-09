@@ -192,9 +192,10 @@ export async function chatCompletionGroq(
   systemPrompt: string,
   userPrompt: string,
   model: string = 'llama-3.3-70b-versatile',
-  apiKey?: string
+  apiKey?: string,
+  maxTokens: number = 4096
 ): Promise<string> {
-  console.log(`Groq Chat Completion with model: ${model}`);
+  console.log(`Groq Chat Completion with model: ${model}, maxTokens: ${maxTokens}`);
   const client = createGroqClient(apiKey);
 
   try {
@@ -205,7 +206,7 @@ export async function chatCompletionGroq(
         { role: 'user', content: userPrompt },
       ],
       temperature: 0.3,
-      max_tokens: 8192,
+      max_tokens: maxTokens,
     });
 
     return response.choices[0]?.message?.content || '';

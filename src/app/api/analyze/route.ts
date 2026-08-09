@@ -64,28 +64,37 @@ export async function POST(request: NextRequest) {
     }
 
     // ── Run Analysis ────────────────────────────────────────
-    // Run all three analysis prompts in parallel
-    const [summaryResult, instructionsResult, feedbackResult] = await Promise.all([
-      // 1. Speaker diarization + summary
-      chatCompletionGroq(
-        'You are an expert medical conversation analyst. Return ONLY valid JSON, no other text.',
-        buildSummaryPrompt(transcript),
-        selectedModel,
-        apiKey
-      ),
-      // 2. Patient instructions
+    // Run summary first (needs 8192 tokens for full patient history),
+    // then instructions + feedback in parallel (4096 tokens each).
+    // This avoids hitting Groq's free-tier rate limits.
+
+    // 1. Speaker diarization + summary (largest output)
+    const summaryResult = await chatCompletionGroq(
+      'You are an expert medical conversation analyst. Return ONLY valid JSON, no other text.',
+      buildSummaryPrompt(transcript),
+      selectedModel,
+      apiKey,
+      8192
+    );
+
+    // Small delay to avoid rate-limit bursts
+    await new Promise((r) => setTimeout(r, 1000));
+
+    // 2 & 3. Patient instructions + Doctor feedback (in parallel, smaller output)
+    const [instructionsResult, feedbackResult] = await Promise.all([
       chatCompletionGroq(
         'You are a patient education specialist. Return ONLY valid JSON, no other text.',
         buildPatientInstructionsPrompt(transcript, ''),
         selectedModel,
-        apiKey
+        apiKey,
+        4096
       ),
-      // 3. Doctor feedback
       chatCompletionGroq(
         'You are a medical communication evaluator. Return ONLY valid JSON, no other text.',
         buildDoctorFeedbackPrompt(transcript),
         selectedModel,
-        apiKey
+        apiKey,
+        4096
       ),
     ]);
 
