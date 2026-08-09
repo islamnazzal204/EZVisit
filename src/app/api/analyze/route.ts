@@ -64,9 +64,9 @@ export async function POST(request: NextRequest) {
     }
 
     // ── Run Analysis ────────────────────────────────────────
-    // Run summary first (needs 8192 tokens for full patient history),
-    // then instructions + feedback in parallel (4096 tokens each).
-    // This avoids hitting Groq's free-tier rate limits.
+    // All calls run sequentially because Groq free tier has a 12K TPM limit.
+    // The summary alone can use ~9K tokens, so parallel calls would exceed it.
+    // The retry logic in chatCompletionGroq auto-waits on 429 rate limits.
 
     // 1. Speaker diarization + summary (largest output)
     const summaryResult = await chatCompletionGroq(
@@ -77,26 +77,23 @@ export async function POST(request: NextRequest) {
       8192
     );
 
-    // Small delay to avoid rate-limit bursts
-    await new Promise((r) => setTimeout(r, 1000));
+    // 2. Patient instructions
+    const instructionsResult = await chatCompletionGroq(
+      'You are a patient education specialist. Return ONLY valid JSON, no other text.',
+      buildPatientInstructionsPrompt(transcript, ''),
+      selectedModel,
+      apiKey,
+      4096
+    );
 
-    // 2 & 3. Patient instructions + Doctor feedback (in parallel, smaller output)
-    const [instructionsResult, feedbackResult] = await Promise.all([
-      chatCompletionGroq(
-        'You are a patient education specialist. Return ONLY valid JSON, no other text.',
-        buildPatientInstructionsPrompt(transcript, ''),
-        selectedModel,
-        apiKey,
-        4096
-      ),
-      chatCompletionGroq(
-        'You are a medical communication evaluator. Return ONLY valid JSON, no other text.',
-        buildDoctorFeedbackPrompt(transcript),
-        selectedModel,
-        apiKey,
-        4096
-      ),
-    ]);
+    // 3. Doctor feedback
+    const feedbackResult = await chatCompletionGroq(
+      'You are a medical communication evaluator. Return ONLY valid JSON, no other text.',
+      buildDoctorFeedbackPrompt(transcript),
+      selectedModel,
+      apiKey,
+      4096
+    );
 
     // Parse all three responses with fallback defaults
     let summaryData: {

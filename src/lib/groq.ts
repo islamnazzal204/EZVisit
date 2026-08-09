@@ -198,33 +198,59 @@ export async function chatCompletionGroq(
   console.log(`Groq Chat Completion with model: ${model}, maxTokens: ${maxTokens}`);
   const client = createGroqClient(apiKey);
 
-  try {
-    const response = await client.chat.completions.create({
-      model,
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: userPrompt },
-      ],
-      temperature: 0.3,
-      max_tokens: maxTokens,
-    });
+  const MAX_RETRIES = 3;
 
-    return response.choices[0]?.message?.content || '';
-  } catch (err: unknown) {
-    // Re-throw our own errors as-is
-    if (err instanceof GroqError) throw err;
+  for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+    try {
+      const response = await client.chat.completions.create({
+        model,
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt },
+        ],
+        temperature: 0.3,
+        max_tokens: maxTokens,
+      });
 
-    // Parse OpenAI SDK errors
-    if (err && typeof err === 'object' && 'status' in err) {
-      const apiErr = err as { status: number; message?: string };
-      throw parseGroqError(
-        apiErr.status,
-        apiErr.message || 'Unknown error'
-      );
+      return response.choices[0]?.message?.content || '';
+    } catch (err: unknown) {
+      // Re-throw our own errors as-is (unless rate-limited)
+      if (err instanceof GroqError) throw err;
+
+      // Check for 429 rate-limit from the OpenAI SDK
+      const status = (err && typeof err === 'object' && 'status' in err)
+        ? (err as { status: number }).status
+        : 0;
+      const errMessage = (err && typeof err === 'object' && 'message' in err)
+        ? (err as { message: string }).message
+        : '';
+
+      if (status === 429 && attempt < MAX_RETRIES - 1) {
+        // Extract wait time from error message like "Please try again in 10.84s"
+        const waitMatch = errMessage.match(/try again in ([\d.]+)s/i);
+        const waitSeconds = waitMatch ? Math.ceil(parseFloat(waitMatch[1])) + 1 : 15;
+        console.log(`Rate limited (attempt ${attempt + 1}/${MAX_RETRIES}). Waiting ${waitSeconds}s before retry...`);
+        await new Promise((r) => setTimeout(r, waitSeconds * 1000));
+        continue;
+      }
+
+      // Parse OpenAI SDK errors
+      if (status) {
+        throw parseGroqError(status, errMessage || 'Unknown error');
+      }
+
+      throw err;
     }
-
-    throw err;
   }
+
+  // Should never reach here, but just in case
+  throw new GroqError({
+    message: 'Max retries exceeded',
+    code: 'MAX_RETRIES',
+    statusCode: 429,
+    userMessage: 'Rate limit persists after retries. Please wait a minute and try again.',
+    userMessageAr: 'استمر تجاوز الحد بعد المحاولات. يرجى الانتظار دقيقة والمحاولة مرة أخرى.',
+  });
 }
 
 /**
