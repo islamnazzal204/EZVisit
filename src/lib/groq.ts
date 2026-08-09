@@ -205,7 +205,7 @@ export async function chatCompletionGroq(
         { role: 'user', content: userPrompt },
       ],
       temperature: 0.3,
-      max_tokens: 4096,
+      max_tokens: 8192,
     });
 
     return response.choices[0]?.message?.content || '';

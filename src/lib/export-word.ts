@@ -15,6 +15,7 @@ import {
   BorderStyle,
   Packer,
   ShadingType,
+  TableLayoutType,
 } from 'docx';
 import type {
   Session,
@@ -259,11 +260,13 @@ function buildSummarySection(summary: ConversationSummary): Paragraph[] {
       ].filter(([, val]) => val) as [string, string][];
 
       if (socratesEntries.length) {
+        const socratesColWidths = [30, 70]; // percentage-based
         const headerRow = new TableRow({
           tableHeader: true,
           children: ['SOCRATES', 'Details'].map(
-            (text) =>
+            (text, ci) =>
               new TableCell({
+                width: { size: socratesColWidths[ci], type: WidthType.PERCENTAGE },
                 shading: { type: ShadingType.SOLID, color: '8e44ad', fill: '8e44ad' },
                 children: [
                   new Paragraph({
@@ -280,6 +283,7 @@ function buildSummarySection(summary: ConversationSummary): Paragraph[] {
             new TableRow({
               children: [
                 new TableCell({
+                  width: { size: socratesColWidths[0], type: WidthType.PERCENTAGE },
                   shading: { type: ShadingType.SOLID, color: 'f4ecf7', fill: 'f4ecf7' },
                   children: [
                     new Paragraph({
@@ -288,6 +292,7 @@ function buildSummarySection(summary: ConversationSummary): Paragraph[] {
                   ],
                 }),
                 new TableCell({
+                  width: { size: socratesColWidths[1], type: WidthType.PERCENTAGE },
                   children: [
                     new Paragraph({
                       bidirectional: true,
@@ -302,6 +307,7 @@ function buildSummarySection(summary: ConversationSummary): Paragraph[] {
         paragraphs.push(
           new Table({
             width: { size: 100, type: WidthType.PERCENTAGE },
+            layout: TableLayoutType.FIXED,
             rows: [headerRow, ...dataRows],
           }) as unknown as Paragraph,
         );
@@ -341,11 +347,13 @@ function buildInstructionsSection(instructions: PatientInstructions): Paragraph[
   if (instructions.medications?.length) {
     paragraphs.push(createHeading('Medications', HeadingLevel.HEADING_2));
 
+    const medColWidths = [25, 20, 20, 35]; // percentage-based
     const headerRow = new TableRow({
       tableHeader: true,
       children: ['Medication', 'Dosage', 'Frequency', 'Instructions'].map(
-        (text) =>
+        (text, ci) =>
           new TableCell({
+            width: { size: medColWidths[ci], type: WidthType.PERCENTAGE },
             shading: { type: ShadingType.SOLID, color: '2471a3', fill: '2471a3' },
             children: [
               new Paragraph({
@@ -361,8 +369,9 @@ function buildInstructionsSection(instructions: PatientInstructions): Paragraph[
       (med: MedicationInstruction) =>
         new TableRow({
           children: [med.name, med.dosage, med.frequency, med.instructions].map(
-            (text) =>
+            (text, ci) =>
               new TableCell({
+                width: { size: medColWidths[ci], type: WidthType.PERCENTAGE },
                 children: [
                   new Paragraph({
                     children: [new TextRun({ text: text || '-', size: 20 })],
@@ -376,6 +385,7 @@ function buildInstructionsSection(instructions: PatientInstructions): Paragraph[
     paragraphs.push(
       new Table({
         width: { size: 100, type: WidthType.PERCENTAGE },
+        layout: TableLayoutType.FIXED,
         rows: [headerRow, ...dataRows],
       }) as unknown as Paragraph,
     );
@@ -423,11 +433,13 @@ function buildFeedbackSection(feedback: DoctorFeedback): Paragraph[] {
       ['Overall Score', feedback.scores.overallScore],
     ];
 
+    const scoreColWidths = [75, 25]; // percentage-based
     const headerRow = new TableRow({
       tableHeader: true,
       children: ['Category', 'Score'].map(
-        (text) =>
+        (text, ci) =>
           new TableCell({
+            width: { size: scoreColWidths[ci], type: WidthType.PERCENTAGE },
             shading: { type: ShadingType.SOLID, color: '2471a3', fill: '2471a3' },
             children: [
               new Paragraph({
@@ -444,6 +456,7 @@ function buildFeedbackSection(feedback: DoctorFeedback): Paragraph[] {
         new TableRow({
           children: [
             new TableCell({
+              width: { size: scoreColWidths[0], type: WidthType.PERCENTAGE },
               children: [
                 new Paragraph({
                   children: [
@@ -457,6 +470,7 @@ function buildFeedbackSection(feedback: DoctorFeedback): Paragraph[] {
               ],
             }),
             new TableCell({
+              width: { size: scoreColWidths[1], type: WidthType.PERCENTAGE },
               children: [
                 new Paragraph({
                   alignment: AlignmentType.CENTER,
@@ -478,6 +492,7 @@ function buildFeedbackSection(feedback: DoctorFeedback): Paragraph[] {
     paragraphs.push(
       new Table({
         width: { size: 100, type: WidthType.PERCENTAGE },
+        layout: TableLayoutType.FIXED,
         rows: [headerRow, ...dataRows],
       }) as unknown as Paragraph,
     );
