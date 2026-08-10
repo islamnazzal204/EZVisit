@@ -87,6 +87,7 @@ export interface ConversationSummary {
   followUpRecommendations: string[];
   importantConcerns: string[];
   patientHistory?: PatientHistory;
+  patientHistoryNarrative?: string;
 }
 
 // --- Patient Instructions ---

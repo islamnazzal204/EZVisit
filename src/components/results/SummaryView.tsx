@@ -292,7 +292,7 @@ export default function SummaryView({ summary }: SummaryViewProps) {
       })}
 
       {/* ── Patient History Section ────────────────────────────── */}
-      {patientHistory && (
+      {(summary.patientHistoryNarrative || patientHistory) && (
         <div
           className="card animate-fade-in"
           style={{
@@ -340,170 +340,200 @@ export default function SummaryView({ summary }: SummaryViewProps) {
             </h3>
           </div>
 
-          {/* Patient History sub-sections */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', padding: '12px' }}>
-            {historySubSections.map((sub, idx) => {
-              const value = patientHistory[sub.key];
-
-              // Skip empty fields
-              if (!value) return null;
-              if (sub.type === 'text' && typeof value === 'string' && !value.trim()) return null;
-              if (sub.type === 'list' && Array.isArray(value) && (value.length === 0 || (value.length === 1 && !value[0]))) return null;
-
-              const SubIcon = sub.icon;
-
-              return (
-                <div
-                  key={sub.key}
-                  className="animate-fade-in"
-                  style={{
-                    padding: '12px',
-                    borderRadius: 'var(--radius-sm)',
-                    background: 'var(--surface)',
-                    border: '1px solid var(--border)',
-                    marginBottom: '8px',
-                    animationDelay: `${(sections.length + idx) * 0.06}s`,
-                    animationFillMode: 'backwards',
-                  }}
-                >
-                  {/* Sub-section header */}
-                  <div
+          {/* Patient History narrative content */}
+          <div style={{ padding: '20px' }}>
+            {summary.patientHistoryNarrative ? (
+              /* ── Flowing narrative (Macleod's style) ── */
+              <div
+                dir="ltr"
+                style={{
+                  fontSize: '0.9rem',
+                  lineHeight: 1.85,
+                  color: 'var(--foreground)',
+                  fontFamily: "'Georgia', 'Times New Roman', serif",
+                  textAlign: 'justify',
+                }}
+              >
+                {summary.patientHistoryNarrative.split('\n').filter(p => p.trim()).map((paragraph, idx) => (
+                  <p
+                    key={idx}
                     style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '8px',
-                      marginBottom: '10px',
+                      margin: 0,
+                      marginBottom: idx < summary.patientHistoryNarrative!.split('\n').filter(p => p.trim()).length - 1 ? '14px' : 0,
+                      textIndent: idx > 0 ? '2em' : '0',
                     }}
                   >
+                    {paragraph.trim()}
+                  </p>
+                ))}
+              </div>
+            ) : patientHistory ? (
+              /* ── Fallback: structured sub-sections ── */
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                {historySubSections.map((sub, idx) => {
+                  const value = patientHistory[sub.key];
+
+                  // Skip empty fields
+                  if (!value) return null;
+                  if (sub.type === 'text' && typeof value === 'string' && !value.trim()) return null;
+                  if (sub.type === 'list' && Array.isArray(value) && (value.length === 0 || (value.length === 1 && !value[0]))) return null;
+
+                  const SubIcon = sub.icon;
+
+                  return (
                     <div
+                      key={sub.key}
+                      className="animate-fade-in"
                       style={{
-                        width: '28px',
-                        height: '28px',
-                        borderRadius: '6px',
-                        background: sub.bgColor,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        color: sub.color,
-                        flexShrink: 0,
+                        padding: '12px',
+                        borderRadius: 'var(--radius-sm)',
+                        background: 'var(--surface)',
+                        border: '1px solid var(--border)',
+                        marginBottom: '8px',
+                        animationDelay: `${(sections.length + idx) * 0.06}s`,
+                        animationFillMode: 'backwards',
                       }}
                     >
-                      <SubIcon size={14} />
-                    </div>
-                    <h4
-                      style={{
-                        margin: 0,
-                        fontSize: '0.813rem',
-                        fontWeight: 700,
-                        color: sub.color,
-                      }}
-                    >
-                      {isArabic ? sub.labelAr : sub.labelEn}
-                    </h4>
-                  </div>
-
-                  {/* Sub-section content */}
-                  {sub.type === 'text' && (
-                    <p
-                      style={{
-                        margin: 0,
-                        fontSize: '0.85rem',
-                        lineHeight: 1.75,
-                        color: 'var(--foreground)',
-                      }}
-                    >
-                      {value as string}
-                    </p>
-                  )}
-
-                  {sub.type === 'list' && Array.isArray(value) && (
-                    <ul
-                      style={{
-                        margin: 0,
-                        paddingInlineStart: '20px',
-                        listStyle: 'disc',
-                      }}
-                    >
-                      {(value as string[]).map((item, j) => (
-                        <li
-                          key={j}
+                      {/* Sub-section header */}
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '8px',
+                          marginBottom: '10px',
+                        }}
+                      >
+                        <div
                           style={{
+                            width: '28px',
+                            height: '28px',
+                            borderRadius: '6px',
+                            background: sub.bgColor,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: sub.color,
+                            flexShrink: 0,
+                          }}
+                        >
+                          <SubIcon size={14} />
+                        </div>
+                        <h4
+                          style={{
+                            margin: 0,
+                            fontSize: '0.813rem',
+                            fontWeight: 700,
+                            color: sub.color,
+                          }}
+                        >
+                          {isArabic ? sub.labelAr : sub.labelEn}
+                        </h4>
+                      </div>
+
+                      {/* Sub-section content */}
+                      {sub.type === 'text' && (
+                        <p
+                          style={{
+                            margin: 0,
                             fontSize: '0.85rem',
                             lineHeight: 1.75,
                             color: 'var(--foreground)',
-                            marginBottom: '3px',
                           }}
                         >
-                          {item}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
+                          {value as string}
+                        </p>
+                      )}
 
-                  {sub.type === 'socrates' && (
-                    <div
-                      style={{
-                        borderRadius: 'var(--radius-sm)',
-                        overflow: 'hidden',
-                        border: '1px solid var(--border)',
-                      }}
-                    >
-                      <table
-                        style={{
-                          width: '100%',
-                          borderCollapse: 'collapse',
-                          fontSize: '0.813rem',
-                        }}
-                      >
-                        <tbody>
-                          {socratesLabels.map((field, fi) => {
-                            const socrates = value as SOCRATESHistory;
-                            const fieldVal = socrates[field.key];
-                            if (!fieldVal) return null;
+                      {sub.type === 'list' && Array.isArray(value) && (
+                        <ul
+                          style={{
+                            margin: 0,
+                            paddingInlineStart: '20px',
+                            listStyle: 'disc',
+                          }}
+                        >
+                          {(value as string[]).map((item, j) => (
+                            <li
+                              key={j}
+                              style={{
+                                fontSize: '0.85rem',
+                                lineHeight: 1.75,
+                                color: 'var(--foreground)',
+                                marginBottom: '3px',
+                              }}
+                            >
+                              {item}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
 
-                            return (
-                              <tr
-                                key={field.key}
-                                style={{
-                                  borderBottom:
-                                    fi < socratesLabels.length - 1
-                                      ? '1px solid var(--border)'
-                                      : 'none',
-                                }}
-                              >
-                                <td
-                                  style={{
-                                    padding: '8px 12px',
-                                    fontWeight: 700,
-                                    color: sub.color,
-                                    whiteSpace: 'nowrap',
-                                    verticalAlign: 'top',
-                                    width: isArabic ? 'auto' : '160px',
-                                    background: sub.bgColor,
-                                    borderInlineEnd: '1px solid var(--border)',
-                                  }}
-                                >
-                                  {isArabic ? field.labelAr : field.labelEn}
-                                </td>
-                                <td
-                                  style={{
-                                    padding: '8px 12px',
-                                    lineHeight: 1.65,
-                                    color: 'var(--foreground)',
-                                  }}
-                                >
-                                  {fieldVal}
-                                </td>
-                              </tr>
-                            );
-                          })}
-                        </tbody>
-                      </table>
+                      {sub.type === 'socrates' && (
+                        <div
+                          style={{
+                            borderRadius: 'var(--radius-sm)',
+                            overflow: 'hidden',
+                            border: '1px solid var(--border)',
+                          }}
+                        >
+                          <table
+                            style={{
+                              width: '100%',
+                              borderCollapse: 'collapse',
+                              fontSize: '0.813rem',
+                            }}
+                          >
+                            <tbody>
+                              {socratesLabels.map((field, fi) => {
+                                const socrates = value as SOCRATESHistory;
+                                const fieldVal = socrates[field.key];
+                                if (!fieldVal) return null;
+
+                                return (
+                                  <tr
+                                    key={field.key}
+                                    style={{
+                                      borderBottom:
+                                        fi < socratesLabels.length - 1
+                                          ? '1px solid var(--border)'
+                                          : 'none',
+                                    }}
+                                  >
+                                    <td
+                                      style={{
+                                        padding: '8px 12px',
+                                        fontWeight: 700,
+                                        color: sub.color,
+                                        whiteSpace: 'nowrap',
+                                        verticalAlign: 'top',
+                                        width: isArabic ? 'auto' : '160px',
+                                        background: sub.bgColor,
+                                        borderInlineEnd: '1px solid var(--border)',
+                                      }}
+                                    >
+                                      {isArabic ? field.labelAr : field.labelEn}
+                                    </td>
+                                    <td
+                                      style={{
+                                        padding: '8px 12px',
+                                        lineHeight: 1.65,
+                                        color: 'var(--foreground)',
+                                      }}
+                                    >
+                                      {fieldVal}
+                                    </td>
+                                  </tr>
+                                );
+                              })}
+                            </tbody>
+                          </table>
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
-              );
-            })}
+                  );
+                })}
+              </div>
+            ) : null}
           </div>
         </div>
       )}

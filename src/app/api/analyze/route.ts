@@ -133,6 +133,7 @@ export async function POST(request: NextRequest) {
             socialHistory: [],
             reviewOfSystems: [],
           },
+          patientHistoryNarrative: '',
         },
       };
     }
@@ -204,6 +205,7 @@ export async function POST(request: NextRequest) {
           socialHistory: [],
           reviewOfSystems: [],
         },
+        patientHistoryNarrative: '',
       },
       patientInstructions: instructionsData || {
         medications: [],

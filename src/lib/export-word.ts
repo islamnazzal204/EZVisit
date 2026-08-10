@@ -215,7 +215,27 @@ function buildSummarySection(summary: ConversationSummary): Paragraph[] {
   }
 
   // --- Patient History ---
-  if (summary.patientHistory) {
+  if (summary.patientHistoryNarrative) {
+    // ── Flowing narrative (Macleod's style) ──
+    paragraphs.push(createHeading('Patient History', HeadingLevel.HEADING_1));
+
+    const narrativeParagraphs = summary.patientHistoryNarrative.split('\n').filter(p => p.trim());
+    for (const para of narrativeParagraphs) {
+      paragraphs.push(
+        new Paragraph({
+          spacing: { after: 150 },
+          children: [
+            new TextRun({
+              text: para.trim(),
+              size: 22,
+              font: 'Georgia',
+            }),
+          ],
+        }),
+      );
+    }
+  } else if (summary.patientHistory) {
+    // ── Fallback: structured sub-sections ──
     const ph = summary.patientHistory;
 
     paragraphs.push(createHeading('Patient History', HeadingLevel.HEADING_1));

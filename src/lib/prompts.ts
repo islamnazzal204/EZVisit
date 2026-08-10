@@ -61,8 +61,35 @@ You MUST construct a thorough, detailed patient history by carefully extracting 
 - Each array field should have at least 1 item
 - Think like a medical student writing a comprehensive case report
 
+## Task 4: Patient History Narrative in English (CRITICAL — DO NOT SKIP)
+Using ALL the information you extracted in Task 3, write a flowing, paragraph-based clinical narrative in ENGLISH. This must follow Macleod's Clinical Examination history-taking structure. Do NOT use bullet points, numbered lists, or separate headings. Write it as a continuous story in connected paragraphs.
+
+### Structure (flow as continuous prose, do NOT use headings or labels):
+**Paragraph 1 — Introduction & Presenting Complaint + HPI**: Start with the patient's name (if known, otherwise "The patient"), age, occupation/role, and setting. State the chief complaint in the patient's own translated words. Then seamlessly describe the full history of present illness: onset, duration, site, character, radiation, severity (with scale if mentioned), progression/time course, associated symptoms, and exacerbating/relieving factors. Include any relevant negatives (e.g., "he denies dizziness or loss of consciousness").
+
+**Paragraph 2 — Past Medical & Drug History**: Transition with "Looking at his/her background" or similar phrasing. List past medical conditions, surgical history, current prescribed medications with dosages, over-the-counter medications, and any known drug allergies with the type of reaction.
+
+**Paragraph 3 — Social & Family History**: Transition with "Socially" or similar. Describe living situation, occupation, independence level, smoking history (pack-years if possible), alcohol use (units/week), illicit drug use, and any relevant family history of disease (especially hereditary or premature conditions).
+
+**Paragraph 4 — Systematic Review**: Transition with "A systematic review" or similar. Briefly mention the review of other body systems, noting pertinent negatives. Keep this concise.
+
+### Example of the exact style to follow:
+"Mr. David Miller, a 58-year-old accountant, presented to the Emergency Department complaining of a sudden onset of severe central chest pain that began at rest approximately two hours prior to admission. He describes the pain as a heavy, crushing sensation, "like a tight band across my chest," which radiates directly into his left inner arm and up toward the left angle of his jaw. The pain was rated as an 8 out of 10 in severity and has remained constant without fluctuation. Onset was accompanied by profuse sweating, mild shortness of breath, and subtle nausea, though he denies any dizziness, loss of consciousness, or palpitations. The discomfort is unaffected by deep inspiration, coughing, or position, and a dose of sublingual GTN spray administered prior to arrival provided no relief.
+Looking at his background, Mr. Miller has a six-year history of essential hypertension and hyperlipidemia, alongside type 2 diabetes mellitus diagnosed four years ago. His surgical history is notable only for an uncomplicated elective appendectomy in 2005, with no prior history of ischemic heart disease, thromboembolism, or stroke. His current daily prescribed medications include Ramipril 5 mg once daily, Metformin 500 mg twice daily, and Atorvastatin 20 mg once daily. He reports taking over-the-counter aspirin intermittently. He has a known severe allergy to penicillin, which previously caused a widespread urticarial rash and mild facial swelling.
+Socially, Mr. Miller lives in a two-story home with his wife and two children and remains fully independent in all daily activities. He works in a high-stress, sedentary office environment as an accountant. He carries a 15 pack-year smoking history, currently smoking approximately ten cigarettes a day, and drinks around 12 to 14 units of alcohol per week. He denies any illicit drug use. Family history is significant for premature coronary artery disease: his father suffered a fatal heart attack at the age of 52.
+A systematic review was largely unremarkable outside of his presenting complaint. He denies any fever, focal neurological deficits, visual changes, joint complaints, or gastrointestinal disturbances beyond the mild nausea noted in his presenting illness."
+
+### CRITICAL RULES FOR THE NARRATIVE:
+- Write ENTIRELY in English
+- Write as connected flowing paragraphs — NO bullet points, NO numbered lists, NO headings, NO labels
+- Use professional medical English but keep it readable
+- If information was not discussed, state it as a pertinent negative (e.g., "No family history was elicited during the consultation")
+- The narrative should be at least 3-4 paragraphs long
+- Translate any Arabic medical terms into their English equivalents
+- Store this as the "patientHistoryNarrative" field in the JSON output
+
 ## Output Format
-Return ONLY valid JSON with this exact structure (all text in Arabic):
+Return ONLY valid JSON with this exact structure (all text in Arabic EXCEPT patientHistoryNarrative which must be in English):
 
 {
   "diarizedTranscript": [
@@ -99,13 +126,15 @@ Return ONLY valid JSON with this exact structure (all text in Arabic):
       "familyHistory": ["تفاصيل الأمراض الوراثية في العائلة"],
       "socialHistory": ["تفاصيل التاريخ الاجتماعي بشكل مفصل"],
       "reviewOfSystems": ["مراجعة منظمة حسب أجهزة الجسم"]
-    }
+    },
+    "patientHistoryNarrative": "A flowing English narrative of the patient history following Macleod's Clinical Examination format. Multiple paragraphs as continuous prose. NO bullet points or lists."
   }
 }
 
 ## Important Rules
-- All summary text MUST be in Arabic
+- All summary text MUST be in Arabic EXCEPT the patientHistoryNarrative which MUST be in English
 - The patientHistory section is MANDATORY and must be filled with detailed information
+- The patientHistoryNarrative is MANDATORY and must be a flowing English story
 - If the transcript is too short or unclear, still provide your best analysis and state what was not discussed
 - Do not include any text outside the JSON object
 - Use empty arrays [] ONLY for summary categories with no relevant information — NOT for patientHistory fields
